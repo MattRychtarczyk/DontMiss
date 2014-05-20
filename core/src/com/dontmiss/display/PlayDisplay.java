@@ -93,7 +93,7 @@ public class PlayDisplay implements Screen
 	@Override
 	public void render(float delta) 
 	{
-		
+		//random comment
 		Gdx.gl.glClearColor(GodConfig.colorR,GodConfig.colorG,GodConfig.colorB,GodConfig.colorA);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 		
