@@ -19,7 +19,7 @@ public class Projectile extends Entity
 	public Projectile(Sprite sprProjectile,float degrees,float speed)
 	{
 		super(sprProjectile);
-		
+		     
 		timeToExpire = 2;
 		dirX = MathUtils.cosDeg(degrees)*speed;
 		dirY = MathUtils.sinDeg(degrees)*speed;

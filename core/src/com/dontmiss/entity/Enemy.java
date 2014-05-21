@@ -55,8 +55,7 @@ public class Enemy extends Entity
 		
 		dirX=((x-((sprTarget.getX()+(sprTarget.getWidth()/2))-(sprEntity.getWidth()/2)))*speed)*delta;
 		dirY=((y-((sprTarget.getY()+(sprTarget.getHeight()/2))-(sprEntity.getHeight()/2)))*speed)*delta;
-		sprEntity.setPosition(sprEntity.getX()-dirX,sprEntity.getY()-dirY);
-		
+		sprEntity.translate(-dirX, -dirY);
 	}
 
 }

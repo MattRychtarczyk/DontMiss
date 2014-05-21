@@ -21,7 +21,7 @@ public class GodConfig
 	//speed variables
 	public static float projectileSpeed = 0;
 	public static float enemySpeed = 0;
-	public static float rotationSpeed = 0f;
+	public static float rotationSpeed = 140f;
 
 	//timer variables
 	public static int timerTotalMins = 2;

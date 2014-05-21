@@ -22,6 +22,18 @@ public class God
 					GodConfig.colorR = (GodConfig.rdm.nextFloat()); 
 					GodConfig.colorG = (GodConfig.rdm.nextFloat());
 					GodConfig.colorB = (GodConfig.rdm.nextFloat());
+					if(GodConfig.colorR >=.9 && GodConfig.colorA <=.1 && GodConfig.colorB <=.1)
+					{
+						while((GodConfig.colorR >=.9 && GodConfig.colorA <=.1 && GodConfig.colorB <=.1))
+						{
+							GodConfig.colorR = (GodConfig.rdm.nextFloat()); 
+							GodConfig.colorG = (GodConfig.rdm.nextFloat());
+							GodConfig.colorB = (GodConfig.rdm.nextFloat());
+						}
+					}
+					
+	
+					
 				}
 			}
 		}
