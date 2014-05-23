@@ -8,6 +8,7 @@ import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.assets.AssetDescriptor;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
@@ -19,6 +20,7 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 import com.badlogic.gdx.math.Circle;
 import com.badlogic.gdx.math.MathUtils;
+import com.dontmiss.Asset;
 import com.dontmiss.DontMiss;
 
 
@@ -30,28 +32,25 @@ public class PlayDisplay implements Screen
 	private SpriteBatch batch;
 	private OrthographicCamera cam;
 	
-	private Texture texTurret;
-	private Sprite sprTurret;
 
+	private Sprite sprTurret;
+	private Circle circleTurret;
+	
+	//rates and their counters
 	private float rateOfFire;
 	private float rateOfFireCounter;
 	private float rateOfChangingTheSpin;
-	
 	private float rateOfChangingTheSpinCounter;
-	
 	private float spawnRate;
 	private float spawnRateCounter;
+	//textures
+
 	
-	private Texture projectileTex;
-	private Texture enemyTex;
 	
-	private Circle circleTurret;
 	
 	private BitmapFont font;
 	
-	private ShapeRenderer sr;
-	
-	private Game controller;
+	private Game game;
 	
 	//color variables for the background
 	private float colorR;
@@ -86,139 +85,105 @@ public class PlayDisplay implements Screen
 	private Random rdm;
 	private DecimalFormat df;
 
-	public PlayDisplay(Game controller)
+	public PlayDisplay(Game game)
 	{
 		//color variables for the background
-		  colorR=1;
-		  colorG=1;
-		  colorB=1;
-		  colorA = 1;
+		colorR = 1;
+		colorG = 1;
+		colorB = 1;
+		colorA = 1;
 
 		//all the objects on the screen besides the player
-		 projectiles = new ArrayList<Projectile>();
-		 enemies = new ArrayList<Enemy>();
-
+		projectiles = new ArrayList<Projectile>();
+		enemies = new ArrayList<Enemy>();
+		
 		//speed variables
-		  projectileSpeed = 0;
-		  enemySpeed = 0;
-		  rotationSpeed = 140f;
+		projectileSpeed = 35f;
+		enemySpeed = .05f;
+		rotationSpeed = 170f;//140f
 
 		//timer variables
-		  timerTotalMins = 2;
-		  timerTotalSecs = 59;
+		timerTotalMins = 2;
+		timerTotalSecs = 59;
 
 		//pause variable
-		  paused = false;
+		paused = false;
 
 		//the variable that keeps track of where the turret is pointing
-		  degreesCounter= 0;
+		degreesCounter= 0;
 
 		//this message displayed after winning
-		  victoryMessage = "";
+		victoryMessage = "";
 
 		//random variable used to spice up the game
 		//decimal format to make numbers look cleaner
-		  rdm = new Random();
-		  df = new DecimalFormat("00");
+		rdm = new Random();
+		df = new DecimalFormat("00");
 		
-		this.controller = controller;
+		this.game = game;
 		batch = new SpriteBatch();
+		
 		font = new BitmapFont(Gdx.files.internal("abstract.fnt"));
 		font.setScale(3f);
-
+		
 		cam = new OrthographicCamera();
 		cam.setToOrtho(false,Gdx.graphics.getWidth(),Gdx.graphics.getHeight());
 		cam.update();
 		
 		batch.setProjectionMatrix(cam.combined);
 		
-		texTurret = new Texture(Gdx.files.internal("turret.png"));
-		sprTurret = new Sprite(texTurret);
-	
+		
+		
+		sprTurret = new Sprite((Asset.manager.get(Asset.turret)));
 		sprTurret.setOriginCenter();
 		sprTurret.setPosition(((Gdx.graphics.getWidth()/2)-(sprTurret.getWidth()/2)), ((Gdx.graphics.getHeight()/2)-(sprTurret.getHeight()/2)));
 		sprTurret.rotate(270);
-		
 		sprTurret.setSize(256,256);
 		sprTurret.setOrigin(128f, 128f);
-	
-		rateOfChangingTheSpin = 3f;
-		rateOfChangingTheSpinCounter = 0;
-		rateOfFire =2f;
-		spawnRate=6f;
 		
+		rateOfChangingTheSpin = 1f;
+		rateOfChangingTheSpinCounter = 0;
+		rateOfFire =.5f;
+		rateOfFireCounter = 0;
+		spawnRate=6f;
 		spawnRateCounter=0;
 		
-		projectileTex = new Texture("bullet.png");
-		enemyTex = new Texture("enemy.png");
 		
-		circleTurret = new Circle(sprTurret.getX()+(sprTurret.getWidth()/2),sprTurret.getY()+(sprTurret.getHeight()/2),sprTurret.getHeight()/2);
-		
-		sr = new ShapeRenderer(); 
-
 	}
 
 	@Override
 	public void render(float delta) 
 	{
-		//start clearing of the screen with set color
-		Gdx.gl.glClearColor(colorR,colorG,colorB,colorA);
-		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-		//end clearing of the screen with set color
-		degreesCounter += rotationSpeed*delta;
-		rateOfFireCounter+=delta;
-		spawnRateCounter+=delta;
-		rateOfChangingTheSpinCounter +=delta;
-		
-		sprTurret.rotate(rotationSpeed*delta);
-//		sr.begin(ShapeType.Line);
-//			sr.setColor(Color.BLACK);
-//			
-//			sr.line(sprTurret.getX()+(sprTurret.getWidth()/2),sprTurret.getY()+(sprTurret.getHeight()/2),sprTurret.getX()+(sprTurret.getWidth()/2),sprTurret.getY()+(sprTurret.getHeight()/2));
-//		sr.end();
-		
-		
-		updateTimer(delta);
-		
-		if((Gdx.input.isKeyPressed(Keys.SPACE)||Gdx.input.isTouched())&&rateOfFireCounter>=rateOfFire)
+		if(!(paused))
 		{
-			rateOfFireCounter=0;
-			
-			projectiles.add(new Projectile(new Sprite(projectileTex),degreesCounter,35f));
+			//start clearing of the screen with set color
+			Gdx.gl.glClearColor(colorR,colorG,colorB,colorA);
+			Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+			//end clearing of the screen with set color
+			//all rates are adding on time
+			rateOfFireCounter+=delta;
+			spawnRateCounter+=delta;
+			rateOfChangingTheSpinCounter+= delta;
+			//adds on degrees and rotates the turret per frame
+			degreesCounter += rotationSpeed*delta;
+			sprTurret.rotate(rotationSpeed*delta);
+			//input
+			if((Gdx.input.isKeyPressed(Keys.SPACE)||Gdx.input.isTouched())&&rateOfFireCounter>=rateOfFire)
+			{
+				rateOfFireCounter=0;
+				projectiles.add(new Projectile(new Sprite(Asset.manager.get(Asset.projectile)),degreesCounter,projectileSpeed));
+			}
+			if(Gdx.input.isKeyPressed(Keys.C)&&rateOfChangingTheSpinCounter>=rateOfChangingTheSpin)
+			{
+				rateOfChangingTheSpinCounter = 0;
+				rotationSpeed *= -1;
+			}
+			updateTimer(delta);
+			spawn();
+			updateDisplay(delta);
+			checkCollision();
+			removeEntities();
 		}
-		if(Gdx.input.isKeyPressed(Keys.C)&&rateOfChangingTheSpinCounter>=rateOfChangingTheSpin)
-		{
-			rateOfChangingTheSpinCounter = 0;
-			
-			rotationSpeed *= -1;
-		}
-		spawn();
-		
-		
-		batch.setProjectionMatrix(cam.combined);
-				batch.begin();
-					
-					sprTurret.draw(batch);
-					//updates enemies and draws them
-					for(int i=0;i<enemies.size();i++)
-					{
-						enemies.get(i).update(delta);
-						enemies.get(i).getSprite().draw(batch);
-					}
-					//updates projectiles and draws them
-					for(int i=0;i<projectiles.size();i++)
-					{
-						projectiles.get(i).update(delta);
-						projectiles.get(i).getSprite().draw(batch);
-					}
-
-					font.draw(batch, (timerTotalMins + ":" + df.format(timerTotalSecs) + "   " + victoryMessage), 1200, 900);
-				batch.end();
-
-		checkCollision();
-		removeEntities();
-		//God.updateDisplay(batch,sprTurret,delta,cam);
-		
 	}
 	
 	@Override
@@ -256,7 +221,27 @@ public class PlayDisplay implements Screen
 		// TODO Auto-generated method stub
 		
 	}
-	
+	private void updateDisplay(float delta)
+	{
+		batch.setProjectionMatrix(cam.combined);
+		batch.begin();
+			sprTurret.draw(batch);
+			//updates enemies and draws them
+			for(int i=0;i<enemies.size();i++)
+			{
+				enemies.get(i).update(delta);
+				enemies.get(i).getSprite().draw(batch);
+			}
+			//updates projectiles and draws them
+			for(int i=0;i<projectiles.size();i++)
+			{
+				projectiles.get(i).update(delta);
+				projectiles.get(i).getSprite().draw(batch);
+			}
+
+			font.draw(batch, (timerTotalMins + ":" + df.format(timerTotalSecs) + "   " + victoryMessage), 1200, 900);
+		batch.end();
+	}
 	private void checkCollision()
 	{
 		//Checks collision between projectiles and enemies
@@ -316,7 +301,7 @@ public class PlayDisplay implements Screen
 			for(int i = 0;i < n ; i++)
 			{
 				tempDegrees+=degreesInterval;
-				enemies.add(new Enemy(new Sprite(enemyTex), tempDegrees, .05f,sprTurret));
+				enemies.add(new Enemy(new Sprite((Asset.manager.get(Asset.projectile))), tempDegrees, enemySpeed,sprTurret));
 			}
 			
 			spawnRateCounter=0;
@@ -354,6 +339,9 @@ public class PlayDisplay implements Screen
 			timerTotalSecs-=delta;
 		}
 	}
-	
+	private void reset()
+	{
+		
+	}
 
 }
