@@ -11,7 +11,6 @@ public class DontMiss extends Game
 	public void create() 
 	{
 		Asset.load();
-		
 		Asset.manager.finishLoading();
 		pd = new PlayDisplay(this);
 		setScreen(pd);
