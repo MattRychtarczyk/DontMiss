@@ -3,9 +3,11 @@ package com.dontmiss.display;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Random;
+
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
+import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
@@ -14,6 +16,7 @@ import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Circle;
 import com.dontmiss.Asset;
+import com.dontmiss.GameInput;
 import com.dontmiss.entity.Enemy;
 import com.dontmiss.entity.Projectile;
 
@@ -26,11 +29,14 @@ public class PlayDisplay implements Screen
 	private Sprite sprTurret;
 	private Circle circleTurret;
 	private BitmapFont fontAbstract;
+	
+	private InputProcessor gameInput;
+	
 	//rates and their counters
 	private float rateOfFire;
 	private float rateOfFireCounter;
-	private float rateOfChangingTheSpin;
-	private float rateOfChangingTheSpinCounter;
+	private float rateChangingTheSpin;
+	private float rateChangingTheSpinCounter;
 	private float spawnRate;
 	private float spawnRateCounter;
 	
@@ -84,7 +90,7 @@ public class PlayDisplay implements Screen
 		//speed variables
 		projectileSpeed = 35f;
 		enemySpeed = .05f;
-		rotationSpeed = 170f;//140f
+		rotationSpeed = 155f;//140f
 
 		//timer variables
 		timerTotalMins = 2;
@@ -106,11 +112,9 @@ public class PlayDisplay implements Screen
 		
 		this.game = game;
 		batch = new SpriteBatch();
-
 		cam = new OrthographicCamera();
 		cam.setToOrtho(false,Gdx.graphics.getWidth(),Gdx.graphics.getHeight());
 		cam.update();
-		
 		batch.setProjectionMatrix(cam.combined);
 		
 		sprTurret = new Sprite((Asset.manager.get(Asset.imgTurret)));
@@ -120,16 +124,20 @@ public class PlayDisplay implements Screen
 		sprTurret.setSize(256,256);
 		sprTurret.setOrigin(128f, 128f);
 		
+		circleTurret = new Circle(sprTurret.getX()+(sprTurret.getWidth()/2),sprTurret.getY()+(sprTurret.getHeight()/2),sprTurret.getHeight()/2);
+		
 		fontAbstract = Asset.manager.get(Asset.fontAbstract);
 		fontAbstract.setScale(3f);
-		rateOfChangingTheSpin = 1f;
-		rateOfChangingTheSpinCounter = 0;
+		rateChangingTheSpin = 1f;
+		rateChangingTheSpinCounter = 0;
 		rateOfFire =.5f;
 		rateOfFireCounter = 0;
 		spawnRate=6f;
 		spawnRateCounter=0;
 		
-		
+		//sets the input
+		gameInput = new GameInput(this);
+		Gdx.input.setInputProcessor(gameInput);
 	}
 
 	@Override
@@ -144,19 +152,15 @@ public class PlayDisplay implements Screen
 			//all rates are adding on time
 			rateOfFireCounter+=delta;
 			spawnRateCounter+=delta;
-			rateOfChangingTheSpinCounter+= delta;
+			rateChangingTheSpinCounter+= delta;
 			//adds on degrees and rotates the turret per frame
 			degreesCounter += rotationSpeed*delta;
 			sprTurret.rotate(rotationSpeed*delta);
-			//input
-			if((Gdx.input.isKeyPressed(Keys.SPACE)||Gdx.input.isTouched())&&rateOfFireCounter>=rateOfFire)
+			
+			
+			if(Gdx.input.isKeyPressed(Keys.C)&&rateChangingTheSpinCounter>=rateChangingTheSpin)
 			{
-				rateOfFireCounter=0;
-				projectiles.add(new Projectile(new Sprite(Asset.manager.get(Asset.imgProjectile)),degreesCounter,projectileSpeed));
-			}
-			if(Gdx.input.isKeyPressed(Keys.C)&&rateOfChangingTheSpinCounter>=rateOfChangingTheSpin)
-			{
-				rateOfChangingTheSpinCounter = 0;
+				rateChangingTheSpinCounter = 0;
 				rotationSpeed *= -1;
 			}
 			updateTimer(delta);
@@ -166,43 +170,128 @@ public class PlayDisplay implements Screen
 			removeEntities();
 		}
 	}
-	
+
 	@Override
 	public void resize(int width, int height) {
 		// TODO Auto-generated method stub
 		
 	}
-
 	@Override
-	public void show() {
-		// TODO Auto-generated method stub
+	public void show()
+	{
 		
 	}
-
 	@Override
-	public void hide() {
-		// TODO Auto-generated method stub
+	public void hide() 
+	{
+		
 		
 	}
-
 	@Override
 	public void pause() 
 	{
 		
 	}
-
 	@Override
-	public void resume() {
-		// TODO Auto-generated method stub
+	public void resume() 
+	{
+		
 		
 	}
-
 	@Override
 	public void dispose() 
 	{
 		//throws the object in the garbage
 		batch.dispose();
 	}
+	public float getRateOfFire() {
+		return rateOfFire;
+	}
+
+	public float getRateOfFireCounter() {
+		return rateOfFireCounter;
+	}
+
+	public float getRateOfChangingTheSpin() {
+		return rateChangingTheSpin;
+	}
+
+	public float getRateOfChangingTheSpinCounter() {
+		return rateChangingTheSpinCounter;
+	}
+
+	public float getSpawnRate() {
+		return spawnRate;
+	}
+
+	public float getSpawnRateCounter() {
+		return spawnRateCounter;
+	}
+
+	public float getProjectileSpeed() {
+		return projectileSpeed;
+	}
+
+	public float getRotationSpeed() {
+		return rotationSpeed;
+	}
+
+	public int getTimerTotalMins() {
+		return timerTotalMins;
+	}
+
+	public float getTimerTotalSecs() {
+		return timerTotalSecs;
+	}
+
+	public float getDegreesCounter() {
+		return degreesCounter;
+	}
+
+	public void setRateOfFire(float rateOfFire) {
+		this.rateOfFire = rateOfFire;
+	}
+
+	public void setRateOfFireCounter(float rateOfFireCounter) {
+		this.rateOfFireCounter = rateOfFireCounter;
+	}
+
+	public void setRateOfChangingTheSpin(float rateOfChangingTheSpin) {
+		this.rateChangingTheSpin = rateOfChangingTheSpin;
+	}
+
+	public void setRateOfChangingTheSpinCounter(float rateOfChangingTheSpinCounter) {
+		this.rateChangingTheSpinCounter = rateOfChangingTheSpinCounter;
+	}
+
+	public void setSpawnRate(float spawnRate) {
+		this.spawnRate = spawnRate;
+	}
+
+	public void setSpawnRateCounter(float spawnRateCounter) {
+		this.spawnRateCounter = spawnRateCounter;
+	}
+
+	public void setProjectileSpeed(float projectileSpeed) {
+		this.projectileSpeed = projectileSpeed;
+	}
+
+	public void setRotationSpeed(float rotationSpeed) {
+		this.rotationSpeed = rotationSpeed;
+	}
+
+	public void setTimerTotalMins(int timerTotalMins) {
+		this.timerTotalMins = timerTotalMins;
+	}
+
+	public void setTimerTotalSecs(float timerTotalSecs) {
+		this.timerTotalSecs = timerTotalSecs;
+	}
+
+	public void setDegreesCounter(float degreesCounter) {
+		this.degreesCounter = degreesCounter;
+	}
+
 	private void updateDisplay(float delta)
 	{
 		batch.setProjectionMatrix(cam.combined);
@@ -220,13 +309,13 @@ public class PlayDisplay implements Screen
 				projectiles.get(i).update(delta);
 				projectiles.get(i).getSprite().draw(batch);
 			}
-
+			//draws text
 			fontAbstract.draw(batch, (timerTotalMins + ":" + df.format(timerTotalSecs) + "   " + victoryMessage), 1200, 900);
 		batch.end();
 	}
 	private void checkCollision()
 	{
-		//Checks collision between projectiles and enemies
+		//Checks collision between projectile and enemies
 		for (int x=0; x<projectiles.size();x++)
 		{
 			for (int k=0; k<enemies.size();k++)
@@ -283,7 +372,7 @@ public class PlayDisplay implements Screen
 			for(int i = 0;i < n ; i++)
 			{
 				tempDegrees+=degreesInterval;
-				enemies.add(new Enemy(new Sprite((Asset.manager.get(Asset.imgProjectile))), tempDegrees, enemySpeed,sprTurret));
+				enemies.add(new Enemy(new Sprite((Asset.manager.get(Asset.imgEnemy))), tempDegrees, enemySpeed,sprTurret));
 			}
 			
 			spawnRateCounter=0;
@@ -353,8 +442,8 @@ public class PlayDisplay implements Screen
 		sprTurret.setSize(256,256);
 		sprTurret.setOrigin(128f, 128f);
 		
-		rateOfChangingTheSpin = 1f;
-		rateOfChangingTheSpinCounter = 0;
+		rateChangingTheSpin = 1f;
+		rateChangingTheSpinCounter = 0;
 		rateOfFire =.5f;
 		rateOfFireCounter = 0;
 		spawnRate=6f;
@@ -375,5 +464,10 @@ public class PlayDisplay implements Screen
 	{
 		for(int i = 0;i<=projectiles.size();i++)
 			projectiles.remove(i);
+	}
+	public void createProjectiles()
+	{
+		rateOfFireCounter=0;
+		projectiles.add(new Projectile(new Sprite(Asset.manager.get(Asset.imgProjectile)),degreesCounter,projectileSpeed));
 	}
 }

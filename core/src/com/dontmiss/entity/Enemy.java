@@ -1,6 +1,7 @@
 package com.dontmiss.entity;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.math.MathUtils;
 
@@ -27,9 +28,9 @@ public class Enemy extends Entity
 		x=(MathUtils.cosDeg(degrees)*radius)+((Gdx.graphics.getWidth()/2)-(sprEntity.getWidth()/2));
 		y=(MathUtils.sinDeg(degrees)*radius)+((Gdx.graphics.getHeight()/2)-(sprEntity.getHeight()/2));
 		
-		sprEntity.setPosition(x, y);
-		
 		this.sprTarget = sprTarget;
+		
+		sprEntity.setPosition(x, y);
 	}
 	public Enemy(Sprite sprEntity,float x,float y,float speed,Sprite sprTarget) //Rectangular Coordinate Constructor, Just Pass in the X and Y and the constructor will do the rest
 	{
@@ -42,7 +43,9 @@ public class Enemy extends Entity
 		this.x=x;
 		this.y=y;
 		
-		sprEntity.setPosition(x, y);
+		
+		//sprEntity.setSize(128, 128);
+		//sprEntity.setColor(Color.GREEN);
 		
 	}
 	

@@ -19,6 +19,7 @@ public class Asset
 		manager.load(imgTurret);
 		manager.load(imgEnemy);
 		manager.load(fontAbstract);
+		
 	}
 	
 	public static void dispose()
