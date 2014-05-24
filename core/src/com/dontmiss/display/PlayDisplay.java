@@ -33,10 +33,10 @@ public class PlayDisplay implements Screen
 	private InputProcessor gameInput;
 	
 	//rates and their counters
-	private float rateOfFire;
-	private float rateOfFireCounter;
-	private float rateChangingTheSpin;
-	private float rateChangingTheSpinCounter;
+	private float rateFire;
+	private float rateFireCounter;
+	private float rateChangingSpin;
+	private float rateChangingSpinCounter;
 	private float spawnRate;
 	private float spawnRateCounter;
 	
@@ -128,10 +128,11 @@ public class PlayDisplay implements Screen
 		
 		fontAbstract = Asset.manager.get(Asset.fontAbstract);
 		fontAbstract.setScale(3f);
-		rateChangingTheSpin = 1f;
-		rateChangingTheSpinCounter = 0;
-		rateOfFire =.5f;
-		rateOfFireCounter = 0;
+		
+		rateChangingSpin = 1f;
+		rateChangingSpinCounter = 0;
+		rateFire =.001f;
+		rateFireCounter = 0;
 		spawnRate=6f;
 		spawnRateCounter=0;
 		
@@ -149,20 +150,24 @@ public class PlayDisplay implements Screen
 			Gdx.gl.glClearColor(colorR,colorG,colorB,colorA);
 			Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 			//end clearing of the screen with set color
+			
+			
 			//all rates are adding on time
-			rateOfFireCounter+=delta;
+			rateFireCounter+=delta;
 			spawnRateCounter+=delta;
-			rateChangingTheSpinCounter+= delta;
+			rateChangingSpinCounter+= delta;
 			//adds on degrees and rotates the turret per frame
 			degreesCounter += rotationSpeed*delta;
 			sprTurret.rotate(rotationSpeed*delta);
 			
 			
-			if(Gdx.input.isKeyPressed(Keys.C)&&rateChangingTheSpinCounter>=rateChangingTheSpin)
+			if(Gdx.input.isKeyPressed(Keys.C)&&rateChangingSpinCounter>=rateChangingSpin)
 			{
-				rateChangingTheSpinCounter = 0;
+				rateChangingSpinCounter = 0;
 				rotationSpeed *= -1;
 			}
+			
+			
 			updateTimer(delta);
 			spawn();
 			updateDisplay(delta);
@@ -204,20 +209,20 @@ public class PlayDisplay implements Screen
 		//throws the object in the garbage
 		batch.dispose();
 	}
-	public float getRateOfFire() {
-		return rateOfFire;
+	public float getRateFire() {
+		return rateFire;
 	}
 
-	public float getRateOfFireCounter() {
-		return rateOfFireCounter;
+	public float getRateFireCounter() {
+		return rateFireCounter;
 	}
 
-	public float getRateOfChangingTheSpin() {
-		return rateChangingTheSpin;
+	public float getRateChangingTheSpin() {
+		return rateChangingSpin;
 	}
 
-	public float getRateOfChangingTheSpinCounter() {
-		return rateChangingTheSpinCounter;
+	public float getRateChangingSpinCounter() {
+		return rateChangingSpinCounter;
 	}
 
 	public float getSpawnRate() {
@@ -236,11 +241,11 @@ public class PlayDisplay implements Screen
 		return rotationSpeed;
 	}
 
-	public int getTimerTotalMins() {
+	public int getTimerMins() {
 		return timerTotalMins;
 	}
 
-	public float getTimerTotalSecs() {
+	public float getTimerSecs() {
 		return timerTotalSecs;
 	}
 
@@ -248,20 +253,20 @@ public class PlayDisplay implements Screen
 		return degreesCounter;
 	}
 
-	public void setRateOfFire(float rateOfFire) {
-		this.rateOfFire = rateOfFire;
+	public void setRateFire(float rateOfFire) {
+		this.rateFire = rateOfFire;
 	}
 
-	public void setRateOfFireCounter(float rateOfFireCounter) {
-		this.rateOfFireCounter = rateOfFireCounter;
+	public void setRateFireCounter(float rateOfFireCounter) {
+		this.rateFireCounter = rateOfFireCounter;
 	}
 
-	public void setRateOfChangingTheSpin(float rateOfChangingTheSpin) {
-		this.rateChangingTheSpin = rateOfChangingTheSpin;
+	public void setRateChangingSpin(float rateOfChangingTheSpin) {
+		this.rateChangingSpin = rateOfChangingTheSpin;
 	}
 
-	public void setRateOfChangingTheSpinCounter(float rateOfChangingTheSpinCounter) {
-		this.rateChangingTheSpinCounter = rateOfChangingTheSpinCounter;
+	public void setRateChangingSpinCounter(float rateOfChangingTheSpinCounter) {
+		this.rateChangingSpinCounter = rateOfChangingTheSpinCounter;
 	}
 
 	public void setSpawnRate(float spawnRate) {
@@ -280,11 +285,11 @@ public class PlayDisplay implements Screen
 		this.rotationSpeed = rotationSpeed;
 	}
 
-	public void setTimerTotalMins(int timerTotalMins) {
+	public void setTimerMins(int timerTotalMins) {
 		this.timerTotalMins = timerTotalMins;
 	}
 
-	public void setTimerTotalSecs(float timerTotalSecs) {
+	public void setTimerSecs(float timerTotalSecs) {
 		this.timerTotalSecs = timerTotalSecs;
 	}
 
@@ -442,10 +447,10 @@ public class PlayDisplay implements Screen
 		sprTurret.setSize(256,256);
 		sprTurret.setOrigin(128f, 128f);
 		
-		rateChangingTheSpin = 1f;
-		rateChangingTheSpinCounter = 0;
-		rateOfFire =.5f;
-		rateOfFireCounter = 0;
+		rateChangingSpin = 1f;
+		rateChangingSpinCounter = 0;
+		rateFire =.5f;
+		rateFireCounter = 0;
 		spawnRate=6f;
 		spawnRateCounter=0;
 		
@@ -467,7 +472,7 @@ public class PlayDisplay implements Screen
 	}
 	public void createProjectiles()
 	{
-		rateOfFireCounter=0;
+		rateFireCounter=0;
 		projectiles.add(new Projectile(new Sprite(Asset.manager.get(Asset.imgProjectile)),degreesCounter,projectileSpeed));
 	}
 }

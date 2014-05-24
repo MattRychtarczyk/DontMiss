@@ -1,7 +1,6 @@
 package com.dontmiss;
 
 import com.badlogic.gdx.InputProcessor;
-import com.badlogic.gdx.Screen;
 import com.dontmiss.display.PlayDisplay;
 
 public class GameInput implements InputProcessor
@@ -44,7 +43,7 @@ public class GameInput implements InputProcessor
 	@Override
 	public boolean touchUp(int screenX, int screenY, int pointer, int button) 
 	{
-		if(playDisplay.getRateOfFireCounter()>=playDisplay.getRateOfChangingTheSpinCounter())
+		if(playDisplay.getRateFireCounter()>=playDisplay.getRateFire())
 			playDisplay.createProjectiles();
 		return false;
 	}
