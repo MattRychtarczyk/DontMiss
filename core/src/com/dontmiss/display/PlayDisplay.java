@@ -16,6 +16,7 @@ import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Circle;
 import com.dontmiss.Asset;
+import com.dontmiss.Challenge;
 import com.dontmiss.GameInput;
 import com.dontmiss.entity.Enemy;
 import com.dontmiss.entity.Projectile;
@@ -58,8 +59,8 @@ public class PlayDisplay implements Screen
 	private float rotationSpeed;
 
 	//timer variables
-	private int timerTotalMins;
-	private float timerTotalSecs;
+	private int timerMins;
+	private float timerSecs;
 
 	//pause variable
 	private boolean paused;
@@ -75,8 +76,11 @@ public class PlayDisplay implements Screen
 	private Random rdm;
 	private DecimalFormat df;
 
+	private Challenge challenge;	
+	
 	public PlayDisplay(Game game)
 	{
+		challenge = new Challenge(enemies);
 		//color variables for the background
 		colorR = 1;
 		colorG = 1;
@@ -93,8 +97,8 @@ public class PlayDisplay implements Screen
 		rotationSpeed = 155f;//140f
 
 		//timer variables
-		timerTotalMins = 2;
-		timerTotalSecs = 59;
+		timerMins = 2;
+		timerSecs = 59;
 
 		//pause variable
 		paused = false;
@@ -167,7 +171,7 @@ public class PlayDisplay implements Screen
 				rotationSpeed *= -1;
 			}
 			
-			
+			challenge.update(timerMins, timerSecs, enemies);
 			updateTimer(delta);
 			spawn();
 			updateDisplay(delta);
@@ -242,11 +246,11 @@ public class PlayDisplay implements Screen
 	}
 
 	public int getTimerMins() {
-		return timerTotalMins;
+		return timerMins;
 	}
 
 	public float getTimerSecs() {
-		return timerTotalSecs;
+		return timerSecs;
 	}
 
 	public float getDegreesCounter() {
@@ -286,11 +290,11 @@ public class PlayDisplay implements Screen
 	}
 
 	public void setTimerMins(int timerTotalMins) {
-		this.timerTotalMins = timerTotalMins;
+		this.timerMins = timerTotalMins;
 	}
 
 	public void setTimerSecs(float timerTotalSecs) {
-		this.timerTotalSecs = timerTotalSecs;
+		this.timerSecs = timerTotalSecs;
 	}
 
 	public void setDegreesCounter(float degreesCounter) {
@@ -315,7 +319,7 @@ public class PlayDisplay implements Screen
 				projectiles.get(i).getSprite().draw(batch);
 			}
 			//draws text
-			fontAbstract.draw(batch, (timerTotalMins + ":" + df.format(timerTotalSecs) + "   " + victoryMessage), 1200, 900);
+			fontAbstract.draw(batch, (timerMins + ":" + df.format(timerSecs) + "   " + victoryMessage), 1200, 900);
 		batch.end();
 	}
 	private void checkCollision()
@@ -370,7 +374,7 @@ public class PlayDisplay implements Screen
 			{
 				degreesInterval =75 ;
 			}
-			if(timerTotalMins<=-1)
+			if(timerMins<=-1)
 				degreesInterval = 5;
 			int n = (int) (360/degreesInterval);
 			float tempDegrees = 0;
@@ -401,18 +405,18 @@ public class PlayDisplay implements Screen
 	}
 	private void updateTimer(float delta)
 	{
-		if(timerTotalSecs<=0)
+		if(timerSecs<=0)
 		{
-			timerTotalMins-= 1;
-			timerTotalSecs=59;
-			if(timerTotalMins<=-1)
+			timerMins-= 1;
+			timerSecs=59;
+			if(timerMins<=-1)
 			{
 				//end game code
 			}
 		}
 		else
 		{
-			timerTotalSecs-=delta;
+			timerSecs-=delta;
 		}
 	}
 	private void reset()
@@ -429,8 +433,8 @@ public class PlayDisplay implements Screen
 		rotationSpeed = 170f;//140f
 
 		//timer variables
-		timerTotalMins = 2;
-		timerTotalSecs = 59;
+		timerMins = 2;
+		timerSecs = 59;
 
 		//pause variable
 		paused = false;
