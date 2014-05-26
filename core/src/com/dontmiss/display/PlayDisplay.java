@@ -15,6 +15,7 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Circle;
+import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.dontmiss.Asset;
 import com.dontmiss.Challenge;
 import com.dontmiss.GameInput;
@@ -26,6 +27,7 @@ public class PlayDisplay implements Screen
 	private SpriteBatch batch;
 	private OrthographicCamera cam;
 	
+	private Stage stage;
 
 	private Sprite sprTurret;
 	private Circle circleTurret;
@@ -80,7 +82,7 @@ public class PlayDisplay implements Screen
 	
 	public PlayDisplay(Game game)
 	{
-		challenge = new Challenge(enemies);
+
 		//color variables for the background
 		colorR = 1;
 		colorG = 1;
@@ -90,7 +92,7 @@ public class PlayDisplay implements Screen
 		//all the objects on the screen besides the player
 		projectiles = new ArrayList<Projectile>();
 		enemies = new ArrayList<Enemy>();
-		
+		challenge = new Challenge(enemies);
 		//speed variables
 		projectileSpeed = 35f;
 		enemySpeed = .05f;
@@ -140,9 +142,12 @@ public class PlayDisplay implements Screen
 		spawnRate=6f;
 		spawnRateCounter=0;
 		
+		stage = new Stage();
+		
 		//sets the input
 		gameInput = new GameInput(this);
 		Gdx.input.setInputProcessor(gameInput);
+
 	}
 
 	@Override
@@ -171,7 +176,7 @@ public class PlayDisplay implements Screen
 				rotationSpeed *= -1;
 			}
 			
-			challenge.update(timerMins, timerSecs, enemies);
+			challenge.update(timerMins, timerSecs, enemies, delta);
 			updateTimer(delta);
 			spawn();
 			updateDisplay(delta);
@@ -181,8 +186,8 @@ public class PlayDisplay implements Screen
 	}
 
 	@Override
-	public void resize(int width, int height) {
-		// TODO Auto-generated method stub
+	public void resize(int width, int height) 
+	{
 		
 	}
 	@Override

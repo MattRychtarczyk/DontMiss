@@ -4,6 +4,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.math.MathUtils;
+import com.dontmiss.Challenge;
 
 public class Enemy extends Entity 
 {
@@ -32,6 +33,7 @@ public class Enemy extends Entity
 		
 		sprEntity.setPosition(x, y);
 		//sprEntity.setColor(0, 0, 1, .5f);
+		
 	}
 	public Enemy(Sprite sprEntity,float x,float y,float speed,Sprite sprTarget) //Rectangular Coordinate Constructor, Just Pass in the X and Y and the constructor will do the rest
 	{
@@ -43,11 +45,8 @@ public class Enemy extends Entity
 		
 		this.x=x;
 		this.y=y;
-		
-		
 		//sprEntity.setSize(128, 128);
 		//sprEntity.setColor(Color.GREEN);
-		
 	}
 	
 	
@@ -76,9 +75,9 @@ public class Enemy extends Entity
 	public void update(float delta)
 	{
 		updateBounds();
-		if(opacity>=0)
-			opacity-=.0015;
-		sprEntity.setAlpha(opacity);
+		//if(opacity>=0)
+			//opacity-=.0015*delta;
+		//sprEntity.setAlpha(opacity);
 		dirX=((x-((sprTarget.getX()+(sprTarget.getWidth()/2))-(sprEntity.getWidth()/2)))*speed)*delta;
 		dirY=((y-((sprTarget.getY()+(sprTarget.getHeight()/2))-(sprEntity.getHeight()/2)))*speed)*delta;
 		sprEntity.translate(-dirX, -dirY);
