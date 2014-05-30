@@ -385,7 +385,7 @@ public class PlayDisplay implements Screen
 				projectiles.get(i).getSprite().draw(batch);
 			}
 			//draws text
-			fontAbstract.draw(batch, (timerMins + ":" + df.format(timerSecs) + "   " + victoryMessage), 1200, 900);
+			fontAbstract.draw(batch, (timerMins + ":" + df.format(timerSecs) + "   " + victoryMessage), 950, 700);
 			
 		batch.end();
 	}
@@ -485,7 +485,7 @@ public class PlayDisplay implements Screen
 			timerSecs=59;
 			if(timerMins<=-1)
 			{
-				//end game code
+				victoryMessage = "Victory!";
 			}
 		}
 		else

@@ -27,6 +27,8 @@ public class GameInput implements InputProcessor
 			playDisplay.setPaused(true);
 		else if(keycode == Keys.P&&(playDisplay.isPaused()))
 			playDisplay.setPaused(false);
+		if(keycode==Keys.G);
+			playDisplay.setRateFire(.000000000001f);
 		return false;
 	}
 
