@@ -24,11 +24,11 @@ public class Projectile extends Entity
 		dirX = MathUtils.cosDeg(degrees)*speed;
 		dirY = MathUtils.sinDeg(degrees)*speed;
 		
-		
-		sprEntity.setPosition((Gdx.graphics.getWidth()/2)-(sprEntity.getWidth()/2)+(dirX*1.5f),(Gdx.graphics.getHeight()/2)-(sprEntity.getHeight()/2)+(dirY*1.5f));
+		System.out.println(Gdx.graphics.getWidth());
+		sprEntity.setPosition((Gdx.graphics.getWidth()/2)-(sprEntity.getWidth()/2),(Gdx.graphics.getHeight()/2)-(sprEntity.getHeight()/2));
 		sprEntity.setRotation(degrees);
 		
-		sprEntity.setScale(2f);
+		//sprEntity.setScale(2f);
 
 		time=0;
 	}

@@ -2,14 +2,20 @@ package com.dontmiss.display;
 
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.graphics.g2d.Sprite;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
 public class MenuDisplay implements Screen 
 {
 	private Game game;
+	private SpriteBatch batch;
+	private Sprite sprTitle;
 	
 	public MenuDisplay(Game game)
 	{
 		this.game = game;
+		batch = new SpriteBatch();
+		sprTitle = new Sprite();
 	}
 
 	@Override

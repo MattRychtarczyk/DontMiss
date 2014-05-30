@@ -9,6 +9,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
@@ -16,8 +17,13 @@ import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Circle;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
+import com.badlogic.gdx.scenes.scene2d.ui.Label.LabelStyle;
+import com.badlogic.gdx.scenes.scene2d.ui.TextField;
+import com.badlogic.gdx.scenes.scene2d.ui.TextField.TextFieldStyle;
+import com.badlogic.gdx.utils.viewport.ScreenViewport;
+import com.badlogic.gdx.utils.viewport.Viewport;
 import com.dontmiss.Asset;
-import com.dontmiss.Challenge;
 import com.dontmiss.GameInput;
 import com.dontmiss.entity.Enemy;
 import com.dontmiss.entity.Projectile;
@@ -27,7 +33,7 @@ public class PlayDisplay implements Screen
 	private SpriteBatch batch;
 	private OrthographicCamera cam;
 	
-	private Stage stage;
+	
 
 	private Sprite sprTurret;
 	private Circle circleTurret;
@@ -78,7 +84,18 @@ public class PlayDisplay implements Screen
 	private Random rdm;
 	private DecimalFormat df;
 
-	private Challenge challenge;	
+	private float opacityRate;
+	private float radiusToDisappear;
+	private boolean isChangingDir;
+	
+	
+	
+	/* USER INTERFACE */
+//	private Stage stage;
+//	private Label lblTimer;
+//	private LabelStyle lblStyleMain;
+//	private TextField txt;
+//	private TextFieldStyle txtStyle;
 	
 	public PlayDisplay(Game game)
 	{
@@ -92,7 +109,7 @@ public class PlayDisplay implements Screen
 		//all the objects on the screen besides the player
 		projectiles = new ArrayList<Projectile>();
 		enemies = new ArrayList<Enemy>();
-		challenge = new Challenge(enemies);
+		
 		//speed variables
 		projectileSpeed = 35f;
 		enemySpeed = .05f;
@@ -127,8 +144,8 @@ public class PlayDisplay implements Screen
 		sprTurret.setOriginCenter();
 		sprTurret.setPosition(((Gdx.graphics.getWidth()/2)-(sprTurret.getWidth()/2)), ((Gdx.graphics.getHeight()/2)-(sprTurret.getHeight()/2)));
 		sprTurret.rotate(270);
-		sprTurret.setSize(256,256);
-		sprTurret.setOrigin(128f, 128f);
+		//sprTurret.setSize(256,256);
+		sprTurret.setOrigin(sprTurret.getWidth()/2, sprTurret.getHeight()/2);
 		
 		circleTurret = new Circle(sprTurret.getX()+(sprTurret.getWidth()/2),sprTurret.getY()+(sprTurret.getHeight()/2),sprTurret.getHeight()/2);
 		
@@ -142,7 +159,33 @@ public class PlayDisplay implements Screen
 		spawnRate=6f;
 		spawnRateCounter=0;
 		
-		stage = new Stage();
+		
+		
+		
+		
+		
+		opacityRate = .3f;
+		isChangingDir = false;
+		radiusToDisappear = 2.5f;
+		
+		
+		/* User Interface */
+		
+//		stage = new Stage(new ScreenViewport(),batch);
+//		//stage.getViewport().update(Gdx.graphics.getWidth(),Gdx.graphics.getHeight(),true);
+//		
+//		lblStyleMain = new LabelStyle(fontAbstract,Color.WHITE);
+//		lblTimer = new Label("hello",lblStyleMain);
+//		lblTimer.setHeight(300);
+//		lblTimer.setWidth(900);
+//		lblTimer.setVisible(true);
+//		lblTimer.setPosition(300, 300);
+//		
+//	
+//		
+//		stage.addActor(lblTimer);
+
+		
 		
 		//sets the input
 		gameInput = new GameInput(this);
@@ -161,6 +204,10 @@ public class PlayDisplay implements Screen
 			//end clearing of the screen with set color
 			
 			
+			
+			
+			
+			
 			//all rates are adding on time
 			rateFireCounter+=delta;
 			spawnRateCounter+=delta;
@@ -176,19 +223,21 @@ public class PlayDisplay implements Screen
 				rotationSpeed *= -1;
 			}
 			
-			challenge.update(timerMins, timerSecs, enemies, delta);
+			updateChallenge(delta);
 			updateTimer(delta);
 			spawn();
+			//updateGUI();
 			updateDisplay(delta);
 			checkCollision();
 			removeEntities();
+			//stage.act();
 		}
 	}
 
 	@Override
 	public void resize(int width, int height) 
 	{
-		
+		//stage.getViewport().update(width,height,true);
 	}
 	@Override
 	public void show()
@@ -226,7 +275,13 @@ public class PlayDisplay implements Screen
 		return rateFireCounter;
 	}
 
-	public float getRateChangingTheSpin() {
+	public boolean isPaused() 
+	{
+		return paused;
+	}
+
+	public float getRateChangingTheSpin() 
+	{
 		return rateChangingSpin;
 	}
 
@@ -305,7 +360,13 @@ public class PlayDisplay implements Screen
 	public void setDegreesCounter(float degreesCounter) {
 		this.degreesCounter = degreesCounter;
 	}
+	
+	public void setPaused(boolean paused) 
+	{
+		this.paused = paused;
+	}
 
+	
 	private void updateDisplay(float delta)
 	{
 		batch.setProjectionMatrix(cam.combined);
@@ -325,6 +386,7 @@ public class PlayDisplay implements Screen
 			}
 			//draws text
 			fontAbstract.draw(batch, (timerMins + ":" + df.format(timerSecs) + "   " + victoryMessage), 1200, 900);
+			
 		batch.end();
 	}
 	private void checkCollision()
@@ -339,22 +401,11 @@ public class PlayDisplay implements Screen
 					//Removes both the projectile and enemy from the screen
 					enemies.get(k).setIsExpired(true);
 					projectiles.get(x).setIsExpired(true);
-					//Sets the new background color, randomly
-					colorR = (rdm.nextFloat()); 
-					colorG = (rdm.nextFloat());
-					colorB = (rdm.nextFloat());
-					if(colorR >=.9 && colorA <=.1 && colorB <=.1)
+					newBGColor();
+					if(isChangingDir)
 					{
-						while((colorR >=.9 && colorA <=.1 && colorB <=.1))
-						{
-							colorR = (rdm.nextFloat()); 
-							colorG = (rdm.nextFloat());
-							colorB = (rdm.nextFloat());
-						}
+						rotationSpeed*=-1;
 					}
-					
-	
-					
 				}
 			}
 		}
@@ -364,6 +415,22 @@ public class PlayDisplay implements Screen
 		{
 			if(enemies.get(x).getCircle().overlaps(circleTurret))
 				System.exit(0);
+		}
+	}
+	private void newBGColor()
+	{
+		//Sets the new background color, randomly
+		colorR = (rdm.nextFloat()); 
+		colorG = (rdm.nextFloat());
+		colorB = (rdm.nextFloat());
+		if(colorR >=.7 && colorA <=.15 && colorB <=.15)
+		{
+			while((colorR >=.7 && colorA <=.15 && colorB <=.15))
+			{
+				colorR = (rdm.nextFloat()); 
+				colorG = (rdm.nextFloat());
+				colorB = (rdm.nextFloat());
+			}
 		}
 	}
 	private void spawn()
@@ -383,6 +450,8 @@ public class PlayDisplay implements Screen
 				degreesInterval = 5;
 			int n = (int) (360/degreesInterval);
 			float tempDegrees = 0;
+			
+			
 			for(int i = 0;i < n ; i++)
 			{
 				tempDegrees+=degreesInterval;
@@ -484,4 +553,37 @@ public class PlayDisplay implements Screen
 		rateFireCounter=0;
 		projectiles.add(new Projectile(new Sprite(Asset.manager.get(Asset.imgProjectile)),degreesCounter,projectileSpeed));
 	}
+	public void updateChallenge(float delta)
+	{
+		if(timerSecs<30)
+			disappear(delta);
+		if(timerSecs<25)
+			isChangingDir=true;
+		else if(timerSecs<=1)
+			isChangingDir=false;
+		if(timerMins==2)
+			enemySpeed=.05f;
+		else if(timerMins==1)
+			enemySpeed=.07f;
+		else if(timerMins==0)
+			enemySpeed=.09f;
+	}
+	public void disappear(float delta)
+	{	
+		for(int i = 0;i<enemies.size();i++)
+		{
+			if(Math.sqrt(Math.pow(((enemies.get(i).getSprite().getX() + (enemies.get(i).getSprite().getWidth()/2) ) - (Gdx.graphics.getWidth()/2)),2)+ Math.pow( ((enemies.get(i).getSprite().getY() + (enemies.get(i).getSprite().getHeight()/2)) - (Gdx.graphics.getHeight()/2)),2))<= Math.sqrt(   (Math.pow((Gdx.graphics.getWidth()/2),2)) + (Math.pow((Gdx.graphics.getHeight()/2),2)) )/radiusToDisappear)
+			{
+				enemies.get(i).setOpacity(enemies.get(i).getOpacity()-delta*opacityRate);
+			}
+				
+		}
+	}
+	
+	
+	
+//	public void updateGUI()
+//	{
+//		lblTimer.setText(timerMins + ":" + df.format(timerSecs));
+//	}
 }

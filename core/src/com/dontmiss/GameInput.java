@@ -1,6 +1,7 @@
 package com.dontmiss;
 
 import com.badlogic.gdx.InputProcessor;
+import com.badlogic.gdx.Input.Keys;
 import com.dontmiss.display.PlayDisplay;
 
 public class GameInput implements InputProcessor
@@ -22,7 +23,10 @@ public class GameInput implements InputProcessor
 	@Override
 	public boolean keyUp(int keycode) 
 	{
-		
+		if(keycode == Keys.P&&(!playDisplay.isPaused()))
+			playDisplay.setPaused(true);
+		else if(keycode == Keys.P&&(playDisplay.isPaused()))
+			playDisplay.setPaused(false);
 		return false;
 	}
 

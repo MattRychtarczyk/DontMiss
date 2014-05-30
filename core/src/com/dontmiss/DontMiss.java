@@ -12,6 +12,7 @@ public class DontMiss extends Game
 	{
 		Asset.load();
 		Asset.manager.finishLoading();
+		Asset.setFilters();
 		pd = new PlayDisplay(this);
 		setScreen(pd);
 	}
